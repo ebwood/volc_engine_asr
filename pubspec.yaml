@@ -1,6 +1,6 @@
 name: volc_engine_asr
 description: "volc speech engine asr for flutter"
-version: 0.0.3
+version: 0.0.4
 homepage: https://github.com/ebwood/volc_engine_asr
 
 environment:
