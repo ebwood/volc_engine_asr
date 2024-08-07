@@ -34,3 +34,18 @@
 # If there is no `java.lang.ClassValue` (for example, in Android), then R8/ProGuard will print a warning.
 # However, since in this case they will not be used, we can disable these warnings
 -dontwarn kotlinx.serialization.internal.ClassValueReferences
+
+# Keep plugin classes and their members
+-keep class com.wood.volc_engine_asr.** { *; }
+
+# Keep all annotations
+-keep @interface com.wood.volc_engine_asr.**
+
+# Keep Kotlin metadata
+-keep class kotlin.Metadata { *; }
+-keep class kotlin.jvm.internal.** { *; }
+-keepclassmembers class kotlin.jvm.internal.** { *; }
+
+# Keep Kotlin serialization classes
+-keepnames class kotlinx.serialization.** { *; }
+-keepclassmembers class kotlinx.serialization.** { *; }
