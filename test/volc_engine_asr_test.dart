@@ -25,7 +25,8 @@ class MockVolcEngineAsrPlatform
   Future stopRecord() async {}
 
   @override
-  Stream<RecordContentType> get textStream => Stream<RecordContentType>.fromIterable([]);
+  Stream<RecordContentType> get textAndDurationStream =>
+      Stream<RecordContentType>.fromIterable([]);
 
   @override
   Stream<double> get volumeStream => Stream<double>.fromIterable([]);
@@ -34,7 +35,7 @@ class MockVolcEngineAsrPlatform
   Future startRecord({bool autoStop = false, String? recordDir}) async {}
 
   @override
-  Stream<RecordStatusType> get recordStatusStream => Stream.fromIterable([]);
+  Stream<RecordStatusType> get statusAndFileStream => Stream.fromIterable([]);
 }
 
 void main() {

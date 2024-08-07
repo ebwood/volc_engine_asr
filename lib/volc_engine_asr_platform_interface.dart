@@ -43,7 +43,8 @@ abstract class VolcEngineAsrPlatform extends PlatformInterface {
   }
 
   Stream<VolcSpeechContent?> get speechStream;
-  Stream<RecordContentType> get textStream;
+  Stream<RecordContentType> get textAndDurationStream;
   Stream<double> get volumeStream;
-  Stream<RecordStatusType> get recordStatusStream;
+  Stream<RecordStatusType> get statusAndFileStream;
+  String? get recordFile;
 }

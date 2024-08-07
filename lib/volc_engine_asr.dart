@@ -25,9 +25,11 @@ class VolcEngineAsr {
 
   Stream<VolcSpeechContent?> get speechStream =>
       VolcEngineAsrPlatform.instance.speechStream;
-  Stream<RecordContentType> get textStream => VolcEngineAsrPlatform.instance.textStream;
+  Stream<RecordContentType> get textAndDurationStream =>
+      VolcEngineAsrPlatform.instance.textAndDurationStream;
   Stream<double> get volumeStream =>
       VolcEngineAsrPlatform.instance.volumeStream;
-  Stream<RecordStatusType> get recordStatusStream =>
-      VolcEngineAsrPlatform.instance.recordStatusStream;
+  Stream<RecordStatusType> get statusAndFileStream =>
+      VolcEngineAsrPlatform.instance.statusAndFileStream;
+  String? get recordFile => VolcEngineAsrPlatform.instance.recordFile;
 }
