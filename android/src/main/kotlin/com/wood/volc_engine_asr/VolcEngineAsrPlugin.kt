@@ -18,8 +18,6 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
