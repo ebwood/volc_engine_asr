@@ -1,0 +1,52 @@
+PODS:
+  - Flutter (1.0.0)
+  - integration_test (0.0.1):
+    - Flutter
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+  - permission_handler_apple (9.3.0):
+    - Flutter
+  - SpeechEngineAsrToB (1.1.6):
+    - TTNetworkManager (= 5.0.29.22)
+  - TTNetworkManager (5.0.29.22)
+  - volc_engine_asr (0.0.4):
+    - Flutter
+    - SpeechEngineAsrToB (= 1.1.6)
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - volc_engine_asr (from `.symlinks/plugins/volc_engine_asr/ios`)
+
+SPEC REPOS:
+  https://github.com/volcengine/volcengine-specs.git:
+    - SpeechEngineAsrToB
+    - TTNetworkManager
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
+  volc_engine_asr:
+    :path: ".symlinks/plugins/volc_engine_asr/ios"
+
+SPEC CHECKSUMS:
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
+  SpeechEngineAsrToB: 158b8ab9e993812e55a5453ce357d4083d269c0b
+  TTNetworkManager: 47d93100d944e2ae807e035d8636df92fd5cc390
+  volc_engine_asr: 6485f5ee40d17fc783c117c46fe4d45b2d908358
+
+PODFILE CHECKSUM: b34573101de5ba364358801346748508609546b7
+
+COCOAPODS: 1.15.2
