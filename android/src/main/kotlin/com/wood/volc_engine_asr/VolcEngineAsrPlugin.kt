@@ -221,9 +221,9 @@ class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Strea
         )
 
         //【可选配置】设置VAD头部静音时长，用户多久没说话视为空音频，即静音检测时长
-        engine.setOptionInt(SpeechEngineDefines.PARAMS_KEY_ASR_VAD_START_SILENCE_TIME_INT, 5000)
+        engine.setOptionInt(SpeechEngineDefines.PARAMS_KEY_ASR_VAD_START_SILENCE_TIME_INT, 1000)
         //【可选配置】设置VAD尾部静音时长，用户说话后停顿多久视为说话结束，即自动判停时长
-        engine.setOptionInt(SpeechEngineDefines.PARAMS_KEY_ASR_VAD_END_SILENCE_TIME_INT, 200);
+        engine.setOptionInt(SpeechEngineDefines.PARAMS_KEY_ASR_VAD_END_SILENCE_TIME_INT, 500);
         //【可选配置】设置VAD模式，用于定制VAD场景，默认为空
 //        engine.setOptionString(SpeechEngineDefines.PARAMS_KEY_ASR_VAD_MODE_STRING, "");
 //        //【可选配置】用户音频输入最大时长，仅一句话识别场景生效，单位毫秒，默认为 60000ms.
@@ -307,6 +307,7 @@ class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Strea
 
     private fun onSpeechMessage(type: Int, data: ByteArray?, len: Int) {
         val stdData = String(data ?: ByteArray(0))
+        Log.i(TAG, "返回数据: $type, 内容: $stdData")
         when (type) {
             SpeechEngineDefines.MESSAGE_TYPE_ENGINE_START -> {
                 // Callback: 引擎启动成功回调
