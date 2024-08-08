@@ -77,7 +77,7 @@ class _MyAppState extends State<MyApp> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 StreamBuilder<RecordContentType>(
-                  stream: _volcEngineAsrPlugin.textStream,
+                  stream: _volcEngineAsrPlugin.textAndDurationStream,
                   builder: (context, snapshot) {
                     final value = snapshot.data;
                     return Text(
@@ -91,7 +91,7 @@ class _MyAppState extends State<MyApp> {
                   },
                 ),
                 StreamBuilder<RecordStatusType>(
-                  stream: _volcEngineAsrPlugin.recordStatusStream,
+                  stream: _volcEngineAsrPlugin.statusAndFileStream,
                   builder: (context, snapshot) {
                     String? path = snapshot.data?.recordFile;
 

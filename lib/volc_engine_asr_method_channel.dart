@@ -97,7 +97,7 @@ class MethodChannelVolcEngineAsr extends VolcEngineAsrPlatform {
   }
 
   @override
-  Stream<RecordContentType> get textStream => speechStream
+  Stream<RecordContentType> get textAndDurationStream => speechStream
       .where((e) => e != null && e.type == VolcSpeechContentType.text)
       .cast<VolcSpeechContent>()
       .map((e) => (text: e.text, duration: e.duration));
@@ -109,16 +109,17 @@ class MethodChannelVolcEngineAsr extends VolcEngineAsrPlatform {
       .map((e) => e.volume);
 
   @override
-  Stream<RecordStatusType> get recordStatusStream => speechStream
+  Stream<RecordStatusType> get statusAndFileStream => speechStream
           .where(
               (e) => e != null && e.type == VolcSpeechContentType.recordStatus)
           .cast<VolcSpeechContent>()
           .map((e) {
-        String? path = !e.isRecording ? _recordFile : null;
+        String? path = recordFile;
         return (isRecording: e.isRecording, recordFile: path);
       });
 
-  String? get _recordFile {
+  @override
+  String? get recordFile {
     if (_recordFileDir == null) {
       return null;
     }
