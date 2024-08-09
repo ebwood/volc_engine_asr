@@ -5,7 +5,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'volc_engine_asr'
-  s.version          = '0.0.4'
+  s.version          = '0.0.5'
   s.summary          = 'volc speech engine asr for flutter'
   s.description      = <<-DESC
 A new Flutter plugin project.

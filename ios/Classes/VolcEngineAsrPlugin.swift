@@ -140,9 +140,9 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
         )
         
         //【可选配置】设置VAD头部静音时长，用户多久没说话视为空音频，即静音检测时长
-        //                    engine.setIntParam(5000, SE_PARAMS_KEY_ASR_VAD_START_SILENCE_TIME_INT)
+        engine.setIntParam(1000, forKey: SE_PARAMS_KEY_ASR_VAD_START_SILENCE_TIME_INT)
         //【可选配置】设置VAD尾部静音时长，用户说话后停顿多久视为说话结束，即自动判停时长
-        //                    engine.setIntParam(0, SE_PARAMS_KEY_ASR_VAD_END_SILENCE_TIME_INT);
+        engine.setIntParam(500, forKey: SE_PARAMS_KEY_ASR_VAD_END_SILENCE_TIME_INT);
         //【可选配置】设置VAD模式，用于定制VAD场景，默认为空
         //        engine.setStringParam("", forKey: SE_PARAMS_KEY_ASR_VAD_MODE_STRING);
         //        //【可选配置】用户音频输入最大时长，仅一句话识别场景生效，单位毫秒，默认为 60000ms.
