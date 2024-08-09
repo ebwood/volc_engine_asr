@@ -161,7 +161,7 @@ class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Strea
         engine.setOptionString(SpeechEngineDefines.PARAMS_KEY_APP_VERSION_STRING, appVersion)
         engine.setOptionString(
             SpeechEngineDefines.PARAMS_KEY_LOG_LEVEL_STRING,
-            if (isDebug) SpeechEngineDefines.LOG_LEVEL_DEBUG else SpeechEngineDefines.LOG_LEVEL_WARN
+            if (isDebug) SpeechEngineDefines.LOG_LEVEL_TRACE else SpeechEngineDefines.LOG_LEVEL_WARN
         )
 
         if (debugDir != null)
