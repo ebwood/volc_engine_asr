@@ -11,7 +11,7 @@ class VolcEngineInitParam {
     String? debugDir,
     required this.appVersion,
     required this.appId,
-    required String token,
+    required this.token,
     required this.websocketAddress,
     required this.websocketUri,
     required this.websocketCluster,
