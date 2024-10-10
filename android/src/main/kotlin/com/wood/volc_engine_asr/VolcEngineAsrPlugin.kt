@@ -493,7 +493,7 @@ class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Strea
                     eventSink?.success(VolcEngineSpeechContent.text(text, duration).toJson())
                 }
                 if (result.finish()) {
-                    stopEngine()
+                    speechStop("")
                 }
 
                 Log.i(TAG, "当前录音结果: $text")
