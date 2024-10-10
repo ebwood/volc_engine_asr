@@ -188,6 +188,10 @@ class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Strea
             SpeechEngineDefines.PARAMS_KEY_ASR_CLUSTER_STRING,
             websocketCluster
         )
+        //【必需配置】识别服务资源信息ResourceId，参考大模型流式语音识别API--鉴权
+        engine.setOptionString(SpeechEngineDefines.PARAMS_KEY_RESOURCE_ID_STRING, "volc.bigasr.sauc.duration");
+        //【必需配置】协议类型，大模型流式识别协议需设置为Seed，
+        engine.setOptionInt(SpeechEngineDefines.PARAMS_KEY_PROTOCOL_TYPE_INT, SpeechEngineDefines.PROTOCOL_TYPE_SEED);
 
         //【可选配置】建连超时时间，建议使用默认值
         engine.setOptionInt(SpeechEngineDefines.PARAMS_KEY_ASR_CONN_TIMEOUT_INT, 12000)
