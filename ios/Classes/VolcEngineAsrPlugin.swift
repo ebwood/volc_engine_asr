@@ -206,7 +206,7 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
         engine.setIntParam(60000, forKey: SE_PARAMS_KEY_VAD_MAX_SPEECH_DURATION_INT)
         
         // 大模型语音识别模拟自动判停，传入判停时间字段
-        engine.setStringParam("{\"vad_segment_duration\":\"800\"}", forKey: SE_PARAMS_KEY_ASR_REQ_PARAMS_STRING)
+        engine.setStringParam("{\"vad_segment_duration\":800}", forKey: SE_PARAMS_KEY_ASR_REQ_PARAMS_STRING)
         
         
         //【可选配置】控制是否返回录音音量，在 APP 需要显示音频波形时可以启用
