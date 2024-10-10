@@ -358,24 +358,15 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
     
     private func speechAsrResult(data: Data, isFinal: Bool) {
         DispatchQueue.main.async {
-            var responseDelay: Int64 = 0
-            if (isFinal && self.finishTalkingTimestamp > 0) {
-                responseDelay = Int64(Date().timeIntervalSince1970 * 1000) - self.finishTalkingTimestamp
-            }
-            
             do {
                 // 解析 JSON 数据
-                if let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                    let model = try JSONDecoder().decode(AudioRecognitionResult.self, from: jsonObject)
-                    var duration: Int = model.audioInfo.duration
-                    let text = model.result.text
-                    
-                    print("Text: \(text), duration: \(duration)")
-                    if (!text.isEmpty) {
-                        self.eventSink?(VolcEngineSpeechContent.text(text: text, duration: duration).toJson())
-                    }
-                } else {
-                    print("Error: Unable to parse JSON.")
+                let model = try JSONDecoder().decode(AudioRecognitionResult.self, from: data)
+                var duration: Int = model.audioInfo.duration
+                let text = model.result.text
+                
+                print("Text: \(text), duration: \(duration)")
+                if (!text.isEmpty) {
+                    self.eventSink?(VolcEngineSpeechContent.text(text: text, duration: duration).toJson())
                 }
             } catch {
                 print("Error: \(error)")
