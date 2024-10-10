@@ -30,8 +30,8 @@ data class AudioRecognitionResult(
 ) {
     fun finish(): Boolean {
         val duration = audioInfo.duration
-        val lastUtterance = result.utterances.lastOrNull()
-        if (lastUtterance != null && lastUtterance.definite) {
+        val lastUtterance = result.utterances.findLast { it.definite }
+        if (lastUtterance != null) {
             val lastUtteranceTime = lastUtterance.endTime
             val lastUtteranceInterval = duration - lastUtteranceTime
             return lastUtteranceInterval > 1000
