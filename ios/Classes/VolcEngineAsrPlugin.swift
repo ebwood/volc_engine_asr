@@ -10,6 +10,16 @@ struct AudioRecognitionResult: Codable {
         case audioInfo = "audio_info"
         case result
     }
+    
+    func finish() -> Bool {
+        let duration = audioInfo.duration
+        if let lastUtterance = result.utterances.last, lastUtterance.definite {
+            let lastUtteranceTime = lastUtterance.endTime
+            let lastUtteranceInterval = duration - lastUtteranceTime;
+            return lastUtteranceInterval > 1000
+        }
+        return false
+    }
 }
 
 struct AudioInfo: Codable {
@@ -314,8 +324,8 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
             // Callback: 录音音量回调
             print("Callback: 录音音量");
             let volume = Double(String(data: data, encoding: .utf8) ?? "0.0") ?? 0.0
-            DispatchQueue.main.async {
-                self.eventSink?(VolcEngineSpeechContent.volume(volume: volume).toJson())
+            DispatchQueue.main.async { [weak self] in
+                self?.eventSink?(VolcEngineSpeechContent.volume(volume: volume).toJson())
             }
             break;
         default:
@@ -325,14 +335,14 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
     
     private func speechStart() {
         engineStarted = true
-        DispatchQueue.main.async {
-            self.eventSink?(VolcEngineSpeechContent.recordStatus(isRecording: true).toJson())
+        DispatchQueue.main.async { [weak self] in
+            self?.eventSink?(VolcEngineSpeechContent.recordStatus(isRecording: true).toJson())
         }
     }
     private func speechStop() {
         engineStarted = false
-        DispatchQueue.main.async {
-            self.eventSink?(VolcEngineSpeechContent.recordStatus(isRecording: false).toJson())
+        DispatchQueue.main.async { [weak self] in
+            self?.eventSink?(VolcEngineSpeechContent.recordStatus(isRecording: false).toJson())
         }
     }
     private func speechError(data: Data) {
@@ -357,7 +367,7 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
     }
     
     private func speechAsrResult(data: Data, isFinal: Bool) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
             do {
                 // 解析 JSON 数据
                 let model = try JSONDecoder().decode(AudioRecognitionResult.self, from: data)
@@ -366,7 +376,10 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
                 
                 print("Text: \(text), duration: \(duration)")
                 if (!text.isEmpty) {
-                    self.eventSink?(VolcEngineSpeechContent.text(text: text, duration: duration).toJson())
+                    self?.eventSink?(VolcEngineSpeechContent.text(text: text, duration: duration).toJson())
+                    if model.finish() {
+                        self?.stopEngine()
+                    }
                 }
             } catch {
                 print("Error: \(error)")
