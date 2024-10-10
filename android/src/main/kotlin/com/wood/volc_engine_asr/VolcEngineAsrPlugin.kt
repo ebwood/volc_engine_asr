@@ -294,7 +294,7 @@ class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Strea
 
         engine.setOptionString(
             SpeechEngineDefines.PARAMS_KEY_ASR_REQ_PARAMS_STRING,
-            "{\"vad_segment_duration\":\"800\"}"
+            "{\"vad_segment_duration\":800}"
         )
 
         val ret = engine.initEngine()
