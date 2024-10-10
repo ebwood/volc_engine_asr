@@ -28,6 +28,17 @@ data class AudioRecognitionResult(
     @SerializedName("audio_info") val audioInfo: AudioInfo,
     val result: RecognitionResult
 ) {
+    fun finish(): Boolean {
+        val duration = audioInfo.duration
+        val lastUtterance = result.utterances.lastOrNull()
+        if (lastUtterance != null && lastUtterance.definite) {
+            val lastUtteranceTime = lastUtterance.endTime
+            val lastUtteranceInterval = duration - lastUtteranceTime
+            return lastUtteranceInterval > 1000
+        }
+        return false
+    }
+
     companion object {
         fun parse(jsonString: String): AudioRecognitionResult? {
             return try {
@@ -480,6 +491,9 @@ class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Strea
                 // EventChannel要运行在主线程
                 activity?.runOnUiThread {
                     eventSink?.success(VolcEngineSpeechContent.text(text, duration).toJson())
+                }
+                if (result.finish()) {
+                    stopEngine()
                 }
 
                 Log.i(TAG, "当前录音结果: $text")
