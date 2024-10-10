@@ -5,7 +5,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'volc_engine_asr'
-  s.version          = '0.0.5'
+  s.version          = '0.0.6'
   s.summary          = 'volc speech engine asr for flutter'
   s.description      = <<-DESC
 A new Flutter plugin project.
@@ -19,7 +19,7 @@ A new Flutter plugin project.
 
   # s.source = 'https://github.com/CocoaPods/Specs.git'
   # s.source = 'https://github.com/volcengine/volcengine-specs.git'
-   s.dependency 'SpeechEngineAsrToB', '1.1.6'
+   s.dependency 'SpeechEngineAsrToB', '1.1.7'
 
   s.platform = :ios, '12.0'
 
