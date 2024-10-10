@@ -2,6 +2,53 @@ import Flutter
 import UIKit
 import SpeechEngineAsrToB
 
+struct AudioRecognitionResult: Codable {
+    let audioInfo: AudioInfo
+    let result: RecognitionResult
+    
+    enum CodingKeys: String, CodingKey {
+        case audioInfo = "audio_info"
+        case result
+    }
+}
+
+struct AudioInfo: Codable {
+    let duration: Int
+}
+
+struct RecognitionResult: Codable {
+    let text: String
+    let utterances: [Utterance]
+}
+
+struct Utterance: Codable {
+    let definite: Bool
+    let endTime: Int
+    let startTime: Int
+    let text: String
+    let words: [Word]?
+    
+    enum CodingKeys: String, CodingKey {
+        case definite
+        case endTime = "end_time"
+        case startTime = "start_time"
+        case text
+        case words
+    }
+}
+
+struct Word: Codable {
+    let endTime: Int
+    let startTime: Int
+    let text: String
+    
+    enum CodingKeys: String, CodingKey {
+        case endTime = "end_time"
+        case startTime = "start_time"
+        case text
+    }
+}
+
 public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler, SpeechEngineDelegate {
     
     private var eventSink: FlutterEventSink?
@@ -109,7 +156,7 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
             websocketCluster,
             forKey: SE_PARAMS_KEY_ASR_CLUSTER_STRING
         )
-
+        
         //【必需配置】识别服务资源信息ResourceId，参考大模型流式语音识别API--鉴权
         engine.setStringParam(
             "volc.bigasr.sauc.duration",
@@ -135,7 +182,7 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
         //【可选配置】是否开启标点
         engine.setBoolParam(true, forKey: SE_PARAMS_KEY_ASR_SHOW_NLU_PUNC_BOOL)
         //【可选配置】设置识别语种
-//        engine.setStringParam("en-US", forKey: SE_PARAMS_KEY_ASR_LANGUAGE_STRING)
+        //        engine.setStringParam("en-US", forKey: SE_PARAMS_KEY_ASR_LANGUAGE_STRING)
         //【可选配置】是否启用云端自动判停
         engine.setBoolParam(false, forKey: SE_PARAMS_KEY_ASR_AUTO_STOP_BOOL)
         //【可选配置】是否隐藏句尾标点
@@ -157,6 +204,9 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
         //        engine.setIntParam(60000, forKey: SE_PARAMS_KEY_VAD_MAX_SPEECH_DURATION_INT);
         //【可选配置】最大录音时长，默认60000ms，如果使用场景超过60s请修改该值，-1为不限制录音时长
         engine.setIntParam(60000, forKey: SE_PARAMS_KEY_VAD_MAX_SPEECH_DURATION_INT)
+        
+        // 大模型语音识别模拟自动判停，传入判停时间字段
+        engine.setStringParam("{\"vad_segment_duration\":\"800\"}", forKey: SE_PARAMS_KEY_ASR_REQ_PARAMS_STRING)
         
         
         //【可选配置】控制是否返回录音音量，在 APP 需要显示音频波形时可以启用
@@ -291,7 +341,7 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
             if let jsonDict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
                 print(jsonDict)
                 if (jsonDict.keys.contains("err_code") && jsonDict.keys.contains("err_msg")) {
-//                    stopEngine()
+                    //                    stopEngine()
                 }
             }
         } catch {
@@ -316,41 +366,14 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
             do {
                 // 解析 JSON 数据
                 if let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                    var duration: Int = 0
+                    let model = try JSONDecoder().decode(AudioRecognitionResult.self, from: jsonObject)
+                    var duration: Int = model.audioInfo.duration
+                    let text = model.result.text
                     
-                    if let addition = jsonObject["addition"] as? [String: Any],
-                       let durationString = addition["duration"] as? String,
-                       let durationValue = Int(durationString) {
-                        duration = durationValue
-                    } else {
-                        duration = 0
+                    print("Text: \(text), duration: \(duration)")
+                    if (!text.isEmpty) {
+                        self.eventSink?(VolcEngineSpeechContent.text(text: text, duration: duration).toJson())
                     }
-                    
-                    // 提取 "result" 数组
-                    if let resultArray = jsonObject["result"] as? [[String: Any]] {
-                    
-                       if let firstResult = resultArray.first,
-                          let text = firstResult["text"] as? String {
-                           print("Text: \(text), duration: \(duration)")
-                           if (!text.isEmpty) {
-                               self.eventSink?(VolcEngineSpeechContent.text(text: text, duration: duration).toJson())
-                           }
-                       }
-                    } else {
-                        print("Error: Unable to extract 'text' from result.")
-                    }
-                    
-                    // 提取 "reqid"
-                    if let reqid = jsonObject["reqid"] as? String {
-                        if (isFinal) {
-                            print("Reqid: \(reqid)")
-                            print("response_delay: \(responseDelay)")
-                        }
-
-                    } else {
-                        print("Error: Unable to extract 'reqid'.")
-                    }
-                    
                 } else {
                     print("Error: Unable to parse JSON.")
                 }
