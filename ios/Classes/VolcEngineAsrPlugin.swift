@@ -13,7 +13,7 @@ struct AudioRecognitionResult: Codable {
     
     func finish() -> Bool {
         let duration = audioInfo.duration
-        if let lastUtterance = result.utterances.last, lastUtterance.definite {
+        if let lastUtterance = result.utterances.last(where: { $0.definite }) {
             let lastUtteranceTime = lastUtterance.endTime
             let lastUtteranceInterval = duration - lastUtteranceTime;
             return lastUtteranceInterval > 1000
