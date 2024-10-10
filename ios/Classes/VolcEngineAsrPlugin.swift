@@ -116,7 +116,7 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
             forKey: SE_PARAMS_KEY_RESOURCE_ID_STRING
         )
         //【必需配置】协议类型，BigAsr协议需设置为Seed
-        engine.setIntParam(SEProtocolTypeSeed, forKey: SE_PARAMS_KEY_PROTOCOL_TYPE_INT)
+        engine.setIntParam(Int(SEProtocolTypeSeed.rawValue), forKey: SE_PARAMS_KEY_PROTOCOL_TYPE_INT)
         
         //【可选配置】建连超时时间，建议使用默认值
         engine.setIntParam(12000, forKey: SE_PARAMS_KEY_ASR_CONN_TIMEOUT_INT)
