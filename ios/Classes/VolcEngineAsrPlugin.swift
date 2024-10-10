@@ -378,7 +378,7 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
                 if (!text.isEmpty) {
                     self?.eventSink?(VolcEngineSpeechContent.text(text: text, duration: duration).toJson())
                     if model.finish() {
-                        self?.stopEngine()
+                        self?.speechStop()
                     }
                 }
             } catch {
