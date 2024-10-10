@@ -15,7 +15,7 @@ class VolcEngineInitParam {
     required this.websocketAddress,
     required this.websocketUri,
     required this.websocketCluster,
-  })  : token = 'Bearer;$token',
+  })  : // token = 'Bearer;$token',
         // 只有在调试模式才保存调试日志
         debugDir = debug ? debugDir : null;
   final String userId;
