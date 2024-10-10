@@ -109,6 +109,14 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
             websocketCluster,
             forKey: SE_PARAMS_KEY_ASR_CLUSTER_STRING
         )
+
+        //【必需配置】识别服务资源信息ResourceId，参考大模型流式语音识别API--鉴权
+        engine.setStringParam(
+            "volc.bigasr.sauc.duration",
+            forKey: SE_PARAMS_KEY_RESOURCE_ID_STRING
+        )
+        //【必需配置】协议类型，BigAsr协议需设置为Seed
+        engine.setIntParam(SEProtocolTypeSeed, forKey: SE_PARAMS_KEY_PROTOCOL_TYPE_INT)
         
         //【可选配置】建连超时时间，建议使用默认值
         engine.setIntParam(12000, forKey: SE_PARAMS_KEY_ASR_CONN_TIMEOUT_INT)
