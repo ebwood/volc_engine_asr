@@ -6,6 +6,8 @@ import android.content.Context
 import android.os.Environment
 import android.util.Log
 
+import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import com.bytedance.speech.speechengine.SpeechEngine
 import com.bytedance.speech.speechengine.SpeechEngineDefines
 import com.bytedance.speech.speechengine.SpeechEngineGenerator
@@ -21,6 +23,45 @@ import io.flutter.plugin.common.MethodChannel.Result
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
+
+data class AudioRecognitionResult(
+    @SerializedName("audio_info") val audioInfo: AudioInfo,
+    val result: RecognitionResult
+) {
+    companion object {
+        fun parse(jsonString: String): AudioRecognitionResult? {
+            return try {
+                Gson().fromJson(jsonString, AudioRecognitionResult::class.java)
+            } catch (e: Exception) {
+                println("Error parsing JSON: ${e.message}")
+                null
+            }
+        }
+    }
+}
+
+data class AudioInfo(
+    val duration: Int
+)
+
+data class RecognitionResult(
+    val text: String,
+    val utterances: List<Utterance>
+)
+
+data class Utterance(
+    val definite: Boolean,
+    @SerializedName("end_time") val endTime: Int,
+    @SerializedName("start_time") val startTime: Int,
+    val text: String,
+    val words: List<Word>?
+)
+
+data class Word(
+    @SerializedName("end_time") val endTime: Int,
+    @SerializedName("start_time") val startTime: Int,
+    val text: String
+)
 
 /** VolcEngineAsrPlugin */
 class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.StreamHandler,
@@ -189,9 +230,15 @@ class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Strea
             websocketCluster
         )
         //【必需配置】识别服务资源信息ResourceId，参考大模型流式语音识别API--鉴权
-        engine.setOptionString(SpeechEngineDefines.PARAMS_KEY_RESOURCE_ID_STRING, "volc.bigasr.sauc.duration");
+        engine.setOptionString(
+            SpeechEngineDefines.PARAMS_KEY_RESOURCE_ID_STRING,
+            "volc.bigasr.sauc.duration"
+        );
         //【必需配置】协议类型，大模型流式识别协议需设置为Seed，
-        engine.setOptionInt(SpeechEngineDefines.PARAMS_KEY_PROTOCOL_TYPE_INT, SpeechEngineDefines.PROTOCOL_TYPE_SEED);
+        engine.setOptionInt(
+            SpeechEngineDefines.PARAMS_KEY_PROTOCOL_TYPE_INT,
+            SpeechEngineDefines.PROTOCOL_TYPE_SEED
+        );
 
         //【可选配置】建连超时时间，建议使用默认值
         engine.setOptionInt(SpeechEngineDefines.PARAMS_KEY_ASR_CONN_TIMEOUT_INT, 12000)
@@ -243,6 +290,11 @@ class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Strea
         engine.setOptionBoolean(
             SpeechEngineDefines.PARAMS_KEY_ENABLE_GET_VOLUME_BOOL,
             true
+        )
+
+        engine.setOptionString(
+            SpeechEngineDefines.PARAMS_KEY_ASR_REQ_PARAMS_STRING,
+            "{\"vad_segment_duration\":\"800\"}"
         )
 
         val ret = engine.initEngine()
@@ -418,41 +470,20 @@ class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Strea
     }
 
     private fun speechAsrResult(data: String, isFinal: Boolean) {
-        // 计算由录音结束到 ASR 最终结果之间的延迟
-        var delay: Long = 0
-        if (isFinal && mFinishTalkingTimestamp > 0) {
-            delay = System.currentTimeMillis() - mFinishTalkingTimestamp
-            mFinishTalkingTimestamp = 0
-        }
-        val responseDelay = delay
-
         try {
-            // 从回调的 json 数据中解析 ASR 结果
-            val reader = JSONObject(data)
-            if (!reader.has("result")) {
-                return
-            }
-            var text = reader.getJSONArray("result").getJSONObject(0).getString("text")
-            if (text.isEmpty()) {
-                return
-            }
+            AudioRecognitionResult.parse(data)?.let { result ->
+                var text = result.result.text
+                if (text.isEmpty()) {
+                    return
+                }
+                var duration = result.audioInfo.duration
+                // EventChannel要运行在主线程
+                activity?.runOnUiThread {
+                    eventSink?.success(VolcEngineSpeechContent.text(text, duration).toJson())
+                }
 
-            var duration: Int = 0
-            if (reader.has("addition")) {
-                duration = reader.getJSONObject("addition").getString("duration").toIntOrNull() ?: 0
+                Log.i(TAG, "当前录音结果: $text")
             }
-            // EventChannel要运行在主线程
-            activity?.runOnUiThread {
-                eventSink?.success(VolcEngineSpeechContent.text(text, duration).toJson())
-            }
-
-//            text = "result: $text"
-//            if (isFinal) {
-//                text += "\nreqid: " + reader.getString("reqid")
-//                text += "\nresponse_delay: $responseDelay"
-//            }
-            Log.i(TAG, "当前录音结果: $text")
-
         } catch (e: JSONException) {
             e.printStackTrace()
         }
