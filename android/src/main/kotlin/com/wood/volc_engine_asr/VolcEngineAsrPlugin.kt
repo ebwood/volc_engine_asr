@@ -496,7 +496,7 @@ class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Strea
                     speechStop("")
                 }
 
-                Log.i(TAG, "当前录音结果: $text")
+                Log.i(TAG, "当前录音结果: $text data: $data")
             }
         } catch (e: JSONException) {
             e.printStackTrace()
