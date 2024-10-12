@@ -339,12 +339,17 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
             self?.eventSink?(VolcEngineSpeechContent.recordStatus(isRecording: true).toJson())
         }
     }
+    
     private func speechStop() {
+        if !engineStarted {
+            return
+        }
         engineStarted = false
         DispatchQueue.main.async { [weak self] in
             self?.eventSink?(VolcEngineSpeechContent.recordStatus(isRecording: false).toJson())
         }
     }
+    
     private func speechError(data: Data) {
         do {
             // 使用 JSONSerialization 反序列化数据
@@ -371,7 +376,7 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
             do {
                 // 解析 JSON 数据
                 let model = try JSONDecoder().decode(AudioRecognitionResult.self, from: data)
-                var duration: Int = model.audioInfo.duration
+                let duration: Int = model.audioInfo.duration
                 let text = model.result.text
                 
                 print("Text: \(text), duration: \(duration)")
