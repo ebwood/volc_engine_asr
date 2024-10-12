@@ -474,6 +474,9 @@ class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Strea
     }
 
     private fun speechStop(data: String) {
+        if (!mEngineStarted) {
+            return
+        }
         mEngineStarted = false
         activity?.runOnUiThread {
             eventSink?.success(VolcEngineSpeechContent.recordStatus(false).toJson())
