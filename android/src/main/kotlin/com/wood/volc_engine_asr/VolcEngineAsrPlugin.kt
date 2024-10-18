@@ -91,6 +91,7 @@ class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Strea
     private var speechEngine: SpeechEngine? = null
     private lateinit var applicationContext: Context
     private var activity: Activity? = null
+    private var autoStop: Boolean = false
 
     //    private lateinit var streamRecorder: SpeechStreamRecorder
     private var mEngineStarted: Boolean = false
@@ -341,6 +342,7 @@ class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Strea
             engine.setOptionString(SpeechEngineDefines.PARAMS_KEY_ASR_REC_PATH_STRING, recordDir)
 
         engine.setOptionBoolean(SpeechEngineDefines.PARAMS_KEY_ASR_AUTO_STOP_BOOL, autoStop)
+        this.autoStop = autoStop
         var ret = engine.sendDirective(SpeechEngineDefines.DIRECTIVE_SYNC_STOP_ENGINE, "")
         if (ret != SpeechEngineDefines.ERR_NO_ERROR) {
             Log.e(TAG, "send directive syncStop failed: $ret")
@@ -495,7 +497,7 @@ class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Strea
                 activity?.runOnUiThread {
                     eventSink?.success(VolcEngineSpeechContent.text(text, duration).toJson())
                 }
-                if (result.finish()) {
+                if (autoStop && result.finish()) {
                     speechStop("")
                 }
 
@@ -525,6 +527,4 @@ class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Strea
         }
         speechEngine!!.sendDirective(SpeechEngineDefines.DIRECTIVE_STOP_ENGINE, "")
     }
-
-
 }
