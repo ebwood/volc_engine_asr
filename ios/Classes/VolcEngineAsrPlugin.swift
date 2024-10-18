@@ -65,6 +65,7 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
     private var speechEngine: SpeechEngine?
     private var engineStarted: Bool = false
     private var finishTalkingTimestamp: Int64 = -1
+    private var autoStop: Bool = false
     
     
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -83,7 +84,7 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
         case "init":
             initEngine(params: call.arguments as! [String: Any], result: result)
         case "startRecord":
-            let autoStop = (call.arguments as! [String: Any])["auto_stop"] as! Bool? == true
+            autoStop = (call.arguments as! [String: Any])["auto_stop"] as! Bool? == true
             let recordDir = (call.arguments as! [String: Any])["record_dir"] as! String?
             startRecord(autoStop: autoStop, recordDir: recordDir, result: result)
         case "stopRecord":
@@ -382,7 +383,7 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
                 print("Text: \(text), duration: \(duration)")
                 if (!text.isEmpty) {
                     self?.eventSink?(VolcEngineSpeechContent.text(text: text, duration: duration).toJson())
-                    if model.finish() {
+                    if self?.autoStop == true, model.finish() {
                         self?.speechStop()
                     }
                 }
