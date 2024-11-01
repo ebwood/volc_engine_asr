@@ -13,7 +13,7 @@ struct AudioRecognitionResult: Codable {
     
     func finish() -> Bool {
         let duration = audioInfo.duration
-        if let lastUtterance = result.utterances.last(where: { $0.definite }) {
+        if let lastUtterance = result.utterances?.last(where: { $0.definite }) {
             let lastUtteranceTime = lastUtterance.endTime
             let lastUtteranceInterval = duration - lastUtteranceTime;
             return lastUtteranceInterval > 1000
@@ -28,7 +28,7 @@ struct AudioInfo: Codable {
 
 struct RecognitionResult: Codable {
     let text: String
-    let utterances: [Utterance]
+    let utterances: [Utterance]?
 }
 
 struct Utterance: Codable {
@@ -229,6 +229,8 @@ public class VolcEngineAsrPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
             true,
             forKey: SE_PARAMS_KEY_ENABLE_GET_VOLUME_BOOL
         )
+        // 分词配置
+        engine.setBoolParam(true, forKey: SE_PARAMS_KEY_ASR_SHOW_UTTER_BOOL)
         
         let ret = engine.initEngine()
         if (ret != SENoError) {
