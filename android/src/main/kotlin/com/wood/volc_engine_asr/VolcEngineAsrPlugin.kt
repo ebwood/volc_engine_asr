@@ -30,7 +30,7 @@ data class AudioRecognitionResult(
 ) {
     fun finish(): Boolean {
         val duration = audioInfo.duration
-        val lastUtterance = result.utterances.findLast { it.definite }
+        val lastUtterance = result.utterances?.findLast { it.definite }
         if (lastUtterance != null) {
             val lastUtteranceTime = lastUtterance.endTime
             val lastUtteranceInterval = duration - lastUtteranceTime
@@ -57,7 +57,7 @@ data class AudioInfo(
 
 data class RecognitionResult(
     val text: String,
-    val utterances: List<Utterance>
+    val utterances: List<Utterance>?
 )
 
 data class Utterance(
@@ -297,6 +297,8 @@ class VolcEngineAsrPlugin : FlutterPlugin, MethodCallHandler, EventChannel.Strea
 
         //【可选配置】控制是否返回录音音量，在 APP 需要显示音频波形时可以启用
         engine.setOptionBoolean(SpeechEngineDefines.PARAMS_KEY_ENABLE_GET_VOLUME_BOOL, true)
+        // 设置分词
+        engine.setOptionBoolean(SpeechEngineDefines.PARAMS_KEY_ASR_SHOW_UTTER_BOOL, true)
 
         //【可选配置】是否需要返回录音音量
         engine.setOptionBoolean(
